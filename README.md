@@ -1,58 +1,66 @@
 # File Storage Bot
 
-A Telegram bot to store and manage files easily. This bot allows users to upload files, generate shareable links, and manage access through commands.
+This is a Telegram bot built with Pyrogram that allows users to store and manage files via Telegram. It also includes a simple Flask web service to confirm the bot is running.
 
 ## Features
 
-- Store files in a Telegram channel
-- Generate shareable links for stored files
-- User access control with ban/unban functionality
-- Broadcast messages to users (owner only)
-- Join channel verification before usage
+- Store files by forwarding them to a storage channel.
+- Generate shareable links for stored files.
+- User management with ban/unban functionality.
+- Broadcast messages to all users (owner only).
+- Simple web endpoint to check bot status.
 
-## Installation
+## Requirements
 
-1. Clone the repository or download the project files.
+- Python 3.7+
+- MongoDB instance for storing user data and configuration.
+- Telegram API credentials (API_ID, API_HASH, BOT_TOKEN).
+- Flask and Pyrogram libraries.
 
-2. Install the required dependencies:
+## Setup
+
+1. Clone the repository.
+
+2. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Configuration
+3. Set environment variables or configure MongoDB `variables` collection with:
 
-Set the following environment variables or configure them in the database as per your setup:
+- `API_ID`
+- `API_HASH`
+- `BOT_TOKEN`
+- `OWNER_ID`
+- `BOT_USERNAME`
+- `STORAGE_CHANNEL_ID`
+- `MONGODB_URI`
 
-- `API_ID` - Your Telegram API ID
-- `API_HASH` - Your Telegram API Hash
-- `BOT_TOKEN` - Your Telegram Bot Token
-- `OWNER_ID` - Telegram user ID of the bot owner
-- `BOT_USERNAME` - Your bot's username
-- `STORAGE_CHANNEL_ID` - Telegram channel ID where files will be stored
-
-## Usage
-
-Run the bot with:
+4. Run the bot:
 
 ```bash
 python main.py
 ```
 
-The bot will start and listen for commands and file uploads.
+The bot will start and the Flask web service will be available at `http://0.0.0.0:8090/`.
 
-## Commands
+## Deployment
 
-- `/start` - Welcome message
-- `/help` - Show help message
-- `/about` - About the bot
-- `/broadcast` - Broadcast message to all users (owner only)
-- `/genlink` - Generate multi-media shareable link
-- `/users` - Show total users (owner only)
-- `/ban` - Ban a user (owner only)
-- `/unban` - Unban a user (owner only)
-- `/db_channel` - Set storage channel ID
+To deploy this bot as a web service:
 
-## Developer
+- Ensure all environment variables are set in your deployment environment.
+- Use the provided `start.sh` script or run `python main.py` to start the bot.
+- The Flask app runs on port 8090 and can be used for health checks or status.
 
-Created by @codebaseera
+Optionally, you can create a Dockerfile or deployment configuration for your platform.
+
+## Notes
+
+- The bot requires a MongoDB instance accessible via `MONGODB_URI`.
+- The bot uses threading to run the Flask app and Pyrogram client concurrently.
+- Make sure the storage channel ID is set correctly for file forwarding.
+
+## License
+
+MIT License

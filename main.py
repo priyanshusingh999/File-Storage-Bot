@@ -15,15 +15,6 @@ app = Flask(__name__)
 def home():
     return 'Bot is Running!'
 
-def run_flask():
-    app.run(host='0.0.0.0', port=8090)
-
-threading.Thread(target=run_flask).start()
-
-
-bot = Client("file_storage_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
-
-
 def check_user_access():
     def decorator(func):
         @wraps(func)
@@ -58,8 +49,8 @@ def decode_data(encoded):
     return int(channel_id), int(start), int(end)
 
 
-@bot.on_message(filters.command("start") & filters.private)
 @check_user_access()
+@Client.on_message(filters.command("start") & filters.private)
 async def broadcast_command(client, message: Message):
     user_data = {"user_id": message.from_user.id,"username": message.from_user.username,"name": message.from_user.first_name}
     db['userinfo'].update_one({"user_id": user_data["user_id"]},{"$set": user_data},upsert=True)
@@ -103,27 +94,27 @@ async def broadcast_command(client, message: Message):
     await message.reply_text(start_text, reply_markup=start_keyboard)
 
 
-@bot.on_message(filters.command("help") & filters.private)
 @check_user_access()
+@Client.on_message(filters.command("help") & filters.private)
 async def broadcast_command(client, message: Message):
     await message.reply_text("<b>🛠 Available Commands:\n\n/start - Welcome message\n/help - Show this help\n/about - About me\n/broadcast - use only owner🔒\n/genlink - create multi media link\n/users - use only owner🔒\n/ban - use only owner🔒\n/unban - use only owner🔒</b>")
 
 
-@bot.on_message(filters.command("about") & filters.private)
 @check_user_access()
+@Client.on_message(filters.command("about") & filters.private)
 async def broadcast_command(client, message: Message):
     await message.reply_text("<b>👨‍💻 About Me:\n\nI'm a File Storage Bot\ncreated by @codebaseera.\n\n I can help you store and manage your files easily.</b>")
 
 
-@bot.on_message(filters.command("users") & filters.private & filters.user(OWNER_ID))
 @check_user_access()
+@Client.on_message(filters.command("users") & filters.private & filters.user(OWNER_ID))
 async def broadcast_command(client, message: Message):
     user_count = db["userinfo"].count_documents({"user_id": {"$exists": True}})
     await message.reply_text(f" 👥 Total Users: {user_count}")
 
 
-@bot.on_message(filters.command("broadcast") & filters.private & filters.user(OWNER_ID))
 @check_user_access()
+@Client.on_message(filters.command("broadcast") & filters.private & filters.user(OWNER_ID))
 async def broadcast(client, message: Message):
     message_parts = message.text.split(maxsplit=1)
     if len(message_parts) < 2:
@@ -149,8 +140,8 @@ async def broadcast(client, message: Message):
     await message.reply_text(summary)
 
 
-@bot.on_message(filters.command("ban") & filters.private & filters.user(OWNER_ID))
 @check_user_access()
+@Client.on_message(filters.command("ban") & filters.private & filters.user(OWNER_ID))
 async def ban_user(client, message: Message):
     message_parts = message.text.split(maxsplit=1)
     if len(message_parts) < 2:
@@ -173,8 +164,8 @@ async def ban_user(client, message: Message):
     await message.reply_text(f"✅ User `{user_id}` banned successfully.")
 
 
-@bot.on_message(filters.command("unban") & filters.private & filters.user(OWNER_ID))
 @check_user_access()
+@Client.on_message(filters.command("unban") & filters.private & filters.user(OWNER_ID))
 async def unban_user(client, message: Message):
     message_parts = message.text.split(maxsplit=1)
     if len(message_parts) < 2:
@@ -194,8 +185,8 @@ async def unban_user(client, message: Message):
     await message.reply_text(f"✅ User `{user_id}` unbanned successfully.")
 
 
-@bot.on_message(filters.private & (filters.photo | filters.video | filters.document | filters.audio | filters.voice | filters.video_note))
 @check_user_access()
+@Client.on_message(filters.private & (filters.photo | filters.video | filters.document | filters.audio | filters.voice | filters.video_note))
 async def forward_to_storage(client, message: Message):
     try:
         # 📤 Forward to storage channel
@@ -217,8 +208,8 @@ async def forward_to_storage(client, message: Message):
         await message.reply_text("❌ Failed to save your file. Please try again later.")
 
 
-@bot.on_message(filters.command("db_channel") & filters.private)
 @check_user_access()
+@Client.on_message(filters.command("db_channel") & filters.private)
 async def set_storage_channel(client, message: Message):
     message_parts = message.text.split(maxsplit=1)
     if len(message_parts) < 2:
@@ -234,8 +225,8 @@ async def set_storage_channel(client, message: Message):
     await message.reply_text(f"✅ Storage channel set to {channel_id}.")
 
 
-@bot.on_message(filters.command("genlink") & filters.private)
 @check_user_access()
+@Client.on_message(filters.command("genlink") & filters.private)
 async def generate_link(client, message: Message):
     args = message.command[1:]
 
@@ -273,5 +264,26 @@ async def generate_link(client, message: Message):
         await message.reply_text(f"❌ Error while generating link: {e}")
 
 
+import threading
+from pyrogram import Client
+from flask import Flask
+from config import API_ID, API_HASH, BOT_TOKEN
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return 'Bot is Running!'
+
+def run_flask():
+    app.run(host='0.0.0.0', port=8090)
+
+def run_bot():
+    bot = Client("file_storage_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+    bot.run()
+
 if __name__ == "__main__":
-    app.run(bot.run())
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.start()
+
+    run_bot()
