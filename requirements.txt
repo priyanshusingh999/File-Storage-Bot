@@ -1,5 +1,5 @@
 pymongo
 pyrogram
 tgcrypto
-base64
+base64==1.4.1
 flask
