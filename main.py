@@ -6,6 +6,19 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import UserNotParticipant
 from config import API_ID, API_HASH, BOT_TOKEN, OWNER_ID, db, BOT_USERNAME, STORAGE_CHANNEL_ID
 import base64
+import threading
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return 'Bot is Running!'
+
+def run_flask():
+    app.run(host='0.0.0.0', port=8090)
+
+threading.Thread(target=run_flask).start()
 
 
 bot = Client("file_storage_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
@@ -261,5 +274,4 @@ async def generate_link(client, message: Message):
 
 
 if __name__ == "__main__":
-    bot.run()
-    print("Bot is running...")
+    app.run(bot.run())
