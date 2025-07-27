@@ -5,6 +5,7 @@ from pyrogram.types import Message
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import UserNotParticipant
 from config import API_ID, API_HASH, BOT_TOKEN, OWNER_ID, db, BOT_USERNAME, STORAGE_CHANNEL_ID
+from keep_alive import keep_alive
 import base64
 
 
@@ -262,3 +263,4 @@ async def generate_link(client, message: Message):
 
 if __name__ == "__main__":
     bot.run()
+    keep_alive()
