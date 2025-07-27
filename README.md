@@ -2,6 +2,8 @@
 
 A Telegram bot to store and manage files easily. This bot allows users to upload files, generate shareable links, and manage access through commands.
 
+👉 [Demo Bot Link](https://t.me/FileStorageX_Bot?start=_tgr_cu4Iz5llOWE1)
+
 ## Features
 
 - Store files in a Telegram channel
