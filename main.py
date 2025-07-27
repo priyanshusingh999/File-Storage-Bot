@@ -262,5 +262,5 @@ async def generate_link(client, message: Message):
 
 
 if __name__ == "__main__":
-    bot.run()
     keep_alive()
+    bot.run()
